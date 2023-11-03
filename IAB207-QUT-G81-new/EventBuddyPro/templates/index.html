@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventBuddyPro - Home</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="static/style/style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">EventBuddyPro</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ url_for('main.index') }}">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.create_event') }}">Create/Update Event</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.event_detail') }}">Event Details</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.booking_history') }}">Booking History</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('auth.register') }}">New User</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link login-button" href="{{ url_for('auth.login') }}">Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+        <!-- Logout button (conditionally rendered) -->
+        <div class="container mt-4">
+            {% if session.logged_in %}
+            <a href="{{ url_for('main.index') }}" class="btn btn-danger">Logout</a>
+            {% endif %}
+        </div>
+
+    <!-- Hero Image -->
+    <div class="hero-image">
+        <img src="static/style/img/Heroimage.jpeg" alt="Hero Image" class="img-fluid">
+    </div>
+
+
+    <div class="container mt-4">
+        <h2>Upcoming Events</h2>
+        <div class="row justify-content-center">
+            {% for event in upcoming_events %}
+                <div class="col-md-4">
+                    <!-- Display event details for upcoming events -->
+                    <h3>{{ event.title }}</h3>
+                    <p>Date: {{ event.date }}</p>
+                    <p>Status: {{ event.status }}</p>
+                    <p>Price: ${{ event.price }}</p>
+                    <p>Category: {{ event.category }}</p>
+                    <img src="data:image/jpeg;base64,{{ event.image }}" alt="{{ event.title }}" class="img-fluid">
+                    <!-- Event Details Button -->
+                    <a href="{{ url_for('main.event_detail', event_id=event.id) }}" class="btn btn-primary">Event Details</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS and your custom script -->
+</body>
+</html>
+

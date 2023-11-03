@@ -1,0 +1,52 @@
+
+/* Navbar Styles */
+.navbar {
+    background-color: #e0803b;
+}
+
+.navbar-brand {
+    color: #ffffff;
+}
+
+.navbar-nav .nav-link {
+    color: #ffffff;
+}
+
+.navbar-nav .nav-item.active .nav-link {
+    color: #fff;
+    background-color: #e0803b;
+}
+
+/* Container Styles */
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.login-button {
+    background-color: blue; /* Set the background color to blue */
+}
+
+/* Table Styles */
+.table {
+    width: 100%;
+}
+
+.table th {
+    background-color: #e0803b;
+    color: #fff;
+}
+
+.booking-image {
+    max-width: 50px;
+    height: auto;
+}
+
+.hero-image img {
+    width: 100%;
+    height: auto;
+}

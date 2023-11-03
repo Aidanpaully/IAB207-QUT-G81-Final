@@ -1,0 +1,81 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventBuddyPro - User Booking History</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <link rel="stylesheet" href="static/style/style.css">
+</head>
+<body>
+    
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">EventBuddyPro</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ url_for('main.index') }}">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.create_event') }}">Create/Update Event</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.event_detail') }}">Event Details</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.booking_history') }}">Booking History</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+        <!-- Logout button (conditionally rendered) -->
+        <div class="container mt-4">
+            {% if session.logged_in %}
+            <a href="{{ url_for('main.index') }}" class="btn btn-danger">Logout</a>
+            {% endif %}
+        </div>
+
+    <!-- User Booking History Page -->
+    <div class="container mt-4">
+        <h1>User Booking History</h1>
+        {% if booking_history %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Booking/Order ID</th>
+                        <th>Time and Date Booked</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in booking_history %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('main.event_detail', event_id=booking.event_id) }}">
+                                {{ booking.event.title }}
+                            </a>
+                        </td>
+                        <td>{{ booking.id }}</td>
+                        <td>{{ booking.booking_date }}</td>
+                        <!-- Add other table columns as needed -->
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>You haven't booked anything yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Include Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

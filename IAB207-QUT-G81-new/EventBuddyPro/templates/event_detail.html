@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventBuddyPro - Event Details</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="static/style/style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">EventBuddyPro</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ url_for('main.index') }}">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('auth.create_update_event') }}">Create/Update Event</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.event_detail') }}">Event Details</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.booking_history') }}">Booking History</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+        <!-- Logout button (conditionally rendered) -->
+        <div class="container mt-4">
+            {% if session.logged_in %}
+            <a href="{{ url_for('main.index') }}" class="btn btn-danger">Logout</a>
+            {% endif %}
+        </div>
+
+   <!-- Event Details -->
+   <div class="container mt-4">
+    <h1>{{ event.title }}</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <img src="{{ event.image_url }}" alt="Event Image" class="img-fluid">
+        </div>
+        <div class="col-md-8">
+            <p>Date: {{ event.date }}</p>
+            <p>Status: {{ event.status }}</p>
+            <p>{{ event.description }}</p>
+        </div>
+    </div>
+</div>
+    <!-- Event Status Section -->
+    <div class="mt-4">
+        <h2>Event Status</h2>
+        <p>
+            Status:
+            <span id="eventStatus" class="font-weight-bold
+                {% if event.status == 'Open' %}
+                    text-success">Available
+                {% elif event.status == 'Inactive' %}
+                    text-secondary">Inactive
+                {% elif event.status == 'Sold Out' %}
+                    text-danger">Sold Out
+                {% elif event.status == 'Cancelled' %}
+                    text-danger">Cancelled
+                {% else %}
+                    text-secondary">Unknown
+                {% endif %}
+            </span>
+        </p>
+    </div>
+    <!-- Booking Options -->
+    <h2 class="mt-4">Book Tickets</h2>
+
+    {% if current_user.is_authenticated %}
+        <form action="{{ url_for('book_tickets', event_id=event.id) }}" method="POST">
+            <div class="form-group">
+                <label for="ticketQuantity">Number of Tickets</label>
+                <input type="number" class="form-control" name="ticketQuantity" id="ticketQuantity" placeholder="Enter quantity" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Book Now</button>
+        </form>
+    {% else %}
+        <p>Please <a href="{{ url_for('auth.login') }}">log in</a> to book tickets for this event.</p>
+    {% endif %}
+
+    </form>
+    <!-- Comments Section -->
+    <h2 class="mt-4">Comments</h2>
+    {% for comment in event.comments %}
+        <div class="media">
+            <img src="static/style/img/avatar.png" class="mr-3" alt="User Avatar" style="width:64px;">
+            <div class="media-body">
+                <h5 class="mt-0">{{ comment.user.name }}</h5>
+                <p>{{ comment.content }}</p>
+                <small class="text-muted">Commented on {{ comment.comment_date }}</small>
+            </div>
+        </div>
+    {% endfor %}
+    <!-- Post a Comment -->
+    <h3 class="mt-4">Post a Comment</h3>
+    <form method="POST" action="{{ url_for('post_comment', event_id=event.id) }}">
+        <div class="form-group">
+            <textarea class="form-control" name="comment_content" rows="4" placeholder="Enter your comment" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Post Comment</button>
+    </form>
+    </form>
+</div>
+
+
+
+
