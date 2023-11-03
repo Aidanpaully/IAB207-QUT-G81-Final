@@ -22,14 +22,20 @@ def index():
 
 
 
-@main_bp.route('/event_details/<int:event_id>')
-def event_details(event_id):
-    event = Event.query.get(event_id)
-    if event:
-        return render_template('event_details.html', event=event)
-    else:
-        # Handle the case where the event doesn't exist.
-        return render_template('event_not_found.html')  # You can create this template.
+@main_bp.route('/event_detail', defaults={'event_id': None})
+@main_bp.route('/event_detail/<int:event_id>')
+def event_detail(event_id):
+    if event_id is not None:
+        # Fetch the event data from your database using the event_id
+        event = Event.query.get(event_id)  # Replace with your actual query
+
+        if event is not None:
+            # Fetch comments for the event
+            comments = Comment.query.filter_by(event_id=event_id).all()  # Replace with your actual query
+            return render_template('event_detail.html', event=event, comments=comments)
+
+    # Handle the case where there is no event ID or the event does not exist
+    return render_template('event_detail.html', event=None, comments=None)
 
 
 

@@ -1,18 +1,23 @@
-from flask import Blueprint, render_template, redirect, request, url_for, flash
+from flask import Blueprint, render_template, redirect, request, url_for, flash, request
 from .forms import LoginForm, RegisterForm
+from functools import wraps
 
 from flask_login import current_user, login_user, login_required, logout_user
 from flask_bcrypt import generate_password_hash, check_password_hash
 from .models import User
 from . import db
+import sqlite3
 
 # Create a blueprint for authentication
 auth_bp = Blueprint('auth', __name__)
 
 # Custom decorator to check if the user is authenticated
 def login_required_custom(view):
+    @wraps(view)
     def wrapped_view(**kwargs):
         if not current_user.is_authenticated:
+            if request.path.startswith('/static/') or request.is_xhr:
+                return redirect(url_for('auth.login'))
             flash('Please log in to access this page.', 'warning')
             return redirect(url_for('auth.login', next=request.url))
         return view(**kwargs)
@@ -39,6 +44,14 @@ def login():
 
     return render_template('login.html', form=login_form, heading='Login')
 
+@auth_bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.')
+    return redirect(url_for('auth.login'))
+
+
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     register_form = RegisterForm()
@@ -48,33 +61,44 @@ def register():
         user_name = register_form.user_name.data
         email_id = register_form.email_id.data
         password = register_form.password.data
+        contact_number = register_form.contact_number.data
+        address = register_form.address.data
+
+        # Connect to the SQLite database
+        conn = sqlite3.connect('IAB207-QUT-G81-new/instance/sitedata.db')
+        cursor = conn.cursor()
 
         # Check if the user already exists
-        existing_user = User.query.filter_by(email=email_id).first()
+        cursor.execute('SELECT * FROM user WHERE email = ?', (email_id,))
+        existing_user = cursor.fetchone()
 
         if existing_user:
             flash('Email address already registered. Please log in.')
             return redirect(url_for('auth.login'))
 
+        # Hash the password before storing it
+        hashed_password = generate_password_hash(password, method='sha256')
+
+        # Prepare the SQL statement to insert the new user
+        insert_sql = '''
+        INSERT INTO user (name, email, password, contact_number, address) 
+        VALUES (?, ?, ?, ?, ?)
+        '''
+
         try:
-            # Hash the password before storing it
-            hashed_password = generate_password_hash(password, method='sha256')
-
-            # Create a new user with the hashed password
-            new_user = User(name=user_name, email=email_id, password=hashed_password)
-
-            # Add the user to the database
-            db.session.add(new_user)
-            db.session.commit()
+            # Execute the SQL statement
+            cursor.execute(insert_sql, (user_name, email_id, hashed_password, contact_number, address))
+            conn.commit()
 
             flash('Registration successful. Please log in.')
             return redirect(url_for('auth.login'))
-
-        except Exception as e:
-            # Handle database errors
-            db.session.rollback()
+        except sqlite3.IntegrityError as e:
+            conn.rollback()
             flash('Registration failed. Please try again later.')
-            print(str(e))  # You can log the error for debugging
+            print(str(e))
+        finally:
+            # Close the connection
+            conn.close()
 
     return render_template('register.html', form=register_form, heading='Register')
 
