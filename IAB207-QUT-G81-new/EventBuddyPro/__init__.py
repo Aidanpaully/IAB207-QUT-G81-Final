@@ -1,6 +1,6 @@
 # Import Flask and necessary extensions
 from flask import Flask
-from flask_bootstrap import Bootstrap5
+from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
@@ -25,7 +25,7 @@ def create_app():
     db.init_app(app)
 
     # Initialize the Bootstrap extension with the app
-    Bootstrap5(app)
+    Bootstrap(app)
 
     # Initialize the LoginManager extension
     login_manager = LoginManager()
